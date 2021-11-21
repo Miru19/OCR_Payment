@@ -10,7 +10,7 @@ export class CustomButton extends React.Component{
     render(){
         return(
             <Button 
-            onPress={()=> console.log("pressed")}
+            onPress={this.props.onPress}
             mode="contained"
             color={this.props.color}
             uppercase={false}
