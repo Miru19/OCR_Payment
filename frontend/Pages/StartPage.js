@@ -54,7 +54,6 @@ const styles = StyleSheet.create({
     },
 });
 
-// cont
 // salvare numere scanate/introduse -> id user + sugestii 
 // retinere tarife in functie de oras, zona
 // alegere oras, timp

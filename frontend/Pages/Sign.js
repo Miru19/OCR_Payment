@@ -11,11 +11,10 @@ export class Sign extends React.Component {
 
     render() {
         const userExists = this.props.route.params.userExists;
-        const buttonText = userExists ? "Sign In" : "Sign Up";
         return (
             <ImageBackground source={image} resizeMode="cover" style={styles.image}>
                 <View style={styles.container} >
-                    <FormComponent buttonText={buttonText} signIn={!userExists}/>
+                    <FormComponent signUp={!userExists} navigation={this.props.navigation}/>
                 </View>
             </ImageBackground>
         );
@@ -31,7 +30,7 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
-        marginTop: '20%',
+        marginTop: '40%',
         width: '100%'
     }
 });
