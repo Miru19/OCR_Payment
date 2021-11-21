@@ -1,7 +1,8 @@
 import React from "react";
 import { TextInput } from "react-native-paper";
 import { CustomButton } from "../Components/CustomButton";
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet } from 'react-native';
+import axiosInstance from "../api/instance";
 
 export class FormComponent extends React.Component {
     constructor(props) {
@@ -15,6 +16,7 @@ export class FormComponent extends React.Component {
         this.onChangeEmail = this.onChangeEmail.bind(this);
         this.onChangePassword = this.onChangePassword.bind(this);
         this.onChangeUserName = this.onChangeUserName.bind(this);
+        this.signInPressed = this.signInPressed.bind(this);
     }
 
     onChangeEmail(email) {
@@ -27,6 +29,14 @@ export class FormComponent extends React.Component {
 
     onChangeUserName(userName) {
         this.setState({ userName: userName })
+    }
+
+    async signInPressed(){
+        const email = this.state.email;
+        const password = this.state.password;
+        const userName = this.state.userName;
+        console.log(userName);
+        await axiosInstance.post("/users/register", {email, password, userName})
     }
 
     render() {
@@ -57,7 +67,7 @@ export class FormComponent extends React.Component {
                     onChangeText={(password) => this.onChangePassword(password)}
                     style={[styles.input, styles.lastInput]} />
 
-                <CustomButton buttonText={this.props.buttonText} color="#29356d" fontColor="#ffffff" />
+                <CustomButton buttonText={this.props.buttonText} color="#29356d" fontColor="#ffffff" onPress={this.signInPressed}/>
             </>
         );
 
