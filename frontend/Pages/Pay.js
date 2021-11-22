@@ -3,6 +3,7 @@ import { StyleSheet, View, Text } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { TextInput } from "react-native-paper";
 import { CustomButton } from "../Components/CustomButton";
+import * as FileSystem from 'expo-file-system';
 
 export class Pay extends React.Component {
     constructor(props) {
@@ -37,6 +38,14 @@ export class Pay extends React.Component {
         this.setState({ areasOpen: !this.state.areasOpen });
     }
 
+    convert(){
+        console.log(require('../assets/plate.jpeg'));
+        FileSystem.readAsStringAsync(require('../assets/plate.jpeg')).then(res=>{
+            console.log(res);
+        }).catch(err=>{
+            console.log(err)
+        })
+    }
     render() {
         return (
             <View style={styles.container}>
@@ -51,7 +60,7 @@ export class Pay extends React.Component {
                     items={this.areasList}
                     setOpen={this.setAreasOpen}
                 />
-                <CustomButton buttonText="Scan Plate" color="#29356d" fontColor="#ffffff" />
+                <CustomButton buttonText="Scan Plate" color="#29356d" fontColor="#ffffff" onPress={()=>{this.convert()}}/>
                 <Text> or </Text>
                 <TextInput mode="outlined" label="Plate Number" style={styles.input} />
 
