@@ -1,5 +1,5 @@
 import {UserController} from "./controller/UserController";
-
+import {ApiController} from "./controller/ApiController";
 export const Routes = [{
     method: "post",
     route: "/users/login",
@@ -15,4 +15,9 @@ export const Routes = [{
     route: "/users/all",
     controller: UserController,
     action: "getAll"
+},{
+    method: "post",
+    route: "/getPlateNumber",
+    controller: ApiController,
+    action: "getPlateNumber"
 }];

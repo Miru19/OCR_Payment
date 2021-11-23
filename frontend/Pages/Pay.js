@@ -1,10 +1,12 @@
 import React from "react";
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View, Text, ImageEditor } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { TextInput } from "react-native-paper";
 import { CustomButton } from "../Components/CustomButton";
 import * as FileSystem from 'expo-file-system';
-
+import * as ImagePicker from 'expo-image-picker';
+import api from "../api";
+import { manipulateAsync, FlipType, SaveFormat } from 'expo-image-manipulator';
 export class Pay extends React.Component {
     constructor(props) {
         super(props);
@@ -38,13 +40,39 @@ export class Pay extends React.Component {
         this.setState({ areasOpen: !this.state.areasOpen });
     }
 
-    convert(){
-        console.log(require('../assets/plate.jpeg'));
-        FileSystem.readAsStringAsync(require('../assets/plate.jpeg')).then(res=>{
-            console.log(res);
-        }).catch(err=>{
-            console.log(err)
+    selectImage() {
+
+        let permissionResult = ImagePicker.requestMediaLibraryPermissionsAsync().then(permissionResult => {
+            if (permissionResult.granted === false) {
+                alert("Permission to access camera roll is required!");
+                return;
+            }
+            ImagePicker.launchImageLibraryAsync({ allowsEditing: false }).then(pickerResult => {
+                if (!pickerResult.cancelled) {
+                    manipulateAsync(pickerResult.uri, [{ resize: { width: 1000 } }], { base64: true }).then(resizedPhoto => {
+                        api.getPlateNumber(resizedPhoto.base64).then(response => {
+                            response.json().then(plateDetails => {
+                                if(plateDetails.results.length>0){
+                                    alert(plateDetails.results[0].plate)
+                                }
+                                console.log(plateDetails);
+                            })
+                        }).catch(error => {
+                                console.log(error);
+                            })
+                    })
+
+                }
+
+            }).catch(pickerErr => {
+                alert("Picker error");
+            })
         })
+
+
+
+
+
     }
     render() {
         return (
@@ -60,7 +88,7 @@ export class Pay extends React.Component {
                     items={this.areasList}
                     setOpen={this.setAreasOpen}
                 />
-                <CustomButton buttonText="Scan Plate" color="#29356d" fontColor="#ffffff" onPress={()=>{this.convert()}}/>
+                <CustomButton buttonText="Scan Plate" color="#29356d" fontColor="#ffffff" onPress={this.selectImage} />
                 <Text> or </Text>
                 <TextInput mode="outlined" label="Plate Number" style={styles.input} />
 
