@@ -5,7 +5,7 @@ import * as bodyParser from "body-parser";
 import {Request, Response} from "express";
 import {Routes} from "./routes";
 
-//createConnection().then(async connection => {
+createConnection().then(async connection => {
 
     const app = express();
     app.use(bodyParser.json({limit: '50mb'}));
@@ -25,4 +25,4 @@ import {Routes} from "./routes";
 
     console.log("Express server has started on port 3000. Open http://localhost:3000/users to see results");
 
-//}).catch(error => console.log(error));
+}).catch(error => console.log(error));

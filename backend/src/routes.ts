@@ -1,5 +1,6 @@
 import {UserController} from "./controller/UserController";
 import {ApiController} from "./controller/ApiController";
+import { PaymentsController } from "./controller/PaymentsController";
 export const Routes = [{
     method: "post",
     route: "/users/login",
@@ -20,4 +21,14 @@ export const Routes = [{
     route: "/getPlateNumber",
     controller: ApiController,
     action: "getPlateNumber"
+},{
+    method: "post",
+    route: "/payments/addPayment",
+    controller: PaymentsController,
+    action: "addPayment"
+},{
+    method: "get",
+    route: "/payments/getPayments",
+    controller: PaymentsController,
+    action: "getPayments"
 }];
