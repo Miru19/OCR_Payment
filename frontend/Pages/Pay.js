@@ -12,11 +12,13 @@ export class Pay extends React.Component {
         super(props);
         this.state = {
             citiesOpen: false,
-            areasOpen: false
+            areasOpen: false,
+            plateNumber: ""
         }
 
         this.setCitiesOpen = this.setCitiesOpen.bind(this);
         this.setAreasOpen = this.setAreasOpen.bind(this);
+        this.selectImage = this.selectImage.bind(this);
     }
 
     citiesList = [
@@ -41,7 +43,6 @@ export class Pay extends React.Component {
     }
 
     selectImage() {
-
         let permissionResult = ImagePicker.requestMediaLibraryPermissionsAsync().then(permissionResult => {
             if (permissionResult.granted === false) {
                 alert("Permission to access camera roll is required!");
@@ -52,28 +53,21 @@ export class Pay extends React.Component {
                     manipulateAsync(pickerResult.uri, [{ resize: { width: 1000 } }], { base64: true }).then(resizedPhoto => {
                         api.getPlateNumber(resizedPhoto.base64).then(response => {
                             response.json().then(plateDetails => {
-                                if(plateDetails.results.length>0){
-                                    alert(plateDetails.results[0].plate)
+                                if (plateDetails.results.length > 0) {
+                                    this.setState({ plateNumber: plateDetails.results[0].plate.toUpperCase() });
                                 }
-                                console.log(plateDetails);
                             })
                         }).catch(error => {
-                                console.log(error);
-                            })
+                            console.log(error);
+                        })
                     })
-
                 }
-
             }).catch(pickerErr => {
                 alert("Picker error");
             })
         })
-
-
-
-
-
     }
+
     render() {
         return (
             <View style={styles.container}>
@@ -90,7 +84,11 @@ export class Pay extends React.Component {
                 />
                 <CustomButton buttonText="Scan Plate" color="#29356d" fontColor="#ffffff" onPress={this.selectImage} />
                 <Text> or </Text>
-                <TextInput mode="outlined" label="Plate Number" style={styles.input} />
+                <TextInput
+                    mode="outlined"
+                    label="Plate Number"
+                    value={this.state.plateNumber}
+                    style={styles.input} />
 
                 <CustomButton buttonText="Pay" color="#29356d" fontColor="#ffffff" />
 

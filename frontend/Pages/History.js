@@ -14,7 +14,6 @@ export class History extends React.Component {
         }
     }
 
-
     async componentDidMount() {
         this._isMounted = true;
         try {
