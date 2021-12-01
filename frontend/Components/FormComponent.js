@@ -51,12 +51,14 @@ export class FormComponent extends React.Component {
     }
 
     async signInPressed() {
-        const email = this.state.email;
-        const password = this.state.password;
+        // const email = this.state.email;
+        // const password = this.state.password;
+        const email = "miruna@email.com";
+        const password = "1234";
 
         try {
-            // const response = await axiosInstance.post("/users/login", { email, password });
-            this.props.navigation.navigate("Menu");
+            const response = await axiosInstance.post("/users/login", { email, password });
+            this.props.navigation.navigate("Menu", {userId: response.data.id});
         } catch (error) {
             this.setState({ isSnackBarVisible: true, snackBarText: error.response.data });
         }

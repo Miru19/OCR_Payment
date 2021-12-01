@@ -13,8 +13,7 @@ export class UserController {
     async login(request: Request, response: Response, next: NextFunction) {
         try {
             const { email, password } = request.body;
-
-            console.log(request.body);
+            
             if (!(email && password)) {
                 response.status(401).send("All input are required");
                 return;

@@ -4,6 +4,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Pay } from "./Pay";
 import { History } from "./History";
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import UserContext from "../Context/UserContext";
 
 const Tab = createBottomTabNavigator()
 
@@ -14,25 +15,27 @@ export class Menu extends React.Component {
 
     render() {
         return (
-            <NavigationContainer independent={true}>
-                <Tab.Navigator screenOptions={({ route }) => ({
-                    tabBarIcon: () => {
-                        let iconName;
-                        if (route.name === 'Pay') {
-                            iconName = 'card';
-                        } else if (route.name === 'History') {
-                            iconName = 'time';
-                        }
-                        return <Ionicons name={iconName} size={25}/>;
-                    },
-                    headerStyle: {backgroundColor:"#91bae5"},
-                    tabBarStyle: {backgroundColor:"#91bae5"},
-                
-                })}>
-                    <Tab.Screen name="Pay" component={Pay} />
-                    <Tab.Screen name="History" component={History} />
-                </Tab.Navigator>
-            </NavigationContainer>
+            <UserContext.Provider value={{userId: this.props.route.params.userId}}>
+                <NavigationContainer independent={true}>
+                    <Tab.Navigator screenOptions={({ route }) => ({
+                        tabBarIcon: () => {
+                            let iconName;
+                            if (route.name === 'Pay') {
+                                iconName = 'card';
+                            } else if (route.name === 'History') {
+                                iconName = 'time';
+                            }
+                            return <Ionicons name={iconName} size={25} />;
+                        },
+                        headerStyle: { backgroundColor: "#91bae5" },
+                        tabBarStyle: { backgroundColor: "#91bae5" },
+
+                    })}>
+                        <Tab.Screen name="Pay" component={Pay} />
+                        <Tab.Screen name="History" component={History} />
+                    </Tab.Navigator>
+                </NavigationContainer>
+            </UserContext.Provider>
         );
 
     }
