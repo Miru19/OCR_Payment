@@ -2,6 +2,7 @@ import { getRepository } from "typeorm";
 import { NextFunction, Request, Response } from "express";
 import { Payment } from "../entity/Payment";
 import { User } from "../entity/User";
+import { print } from "util";
 
 export class PaymentsController {
 
@@ -27,6 +28,27 @@ export class PaymentsController {
 
     async getPayments(request: Request, response: Response, next: NextFunction) {
         return await this.paymentRepository.find({ relations: ['user'], where: { user: { id: request.query.userId } } });
+    }
+    async getZonePrice(request: Request, response: Response, next: NextFunction){
+        let zonePrice;
+        console.log(request.query)
+        if(request.query&&request.query.zone){
+            switch(request.query.zone){
+                case '0':
+                    zonePrice=3;
+                    break;
+                case '1':
+                    zonePrice=2;
+                    break;
+                case '2':
+                    zonePrice=1;
+                    break;
+                default:
+                    return response.status(500).json({message:"Invalid Request"});
+            }
+            return response.status(201).json({price:zonePrice});
+        }
+        return response.status(500).json({message:"Unknown error occured"});
     }
 }
 

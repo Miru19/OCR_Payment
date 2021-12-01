@@ -2,7 +2,7 @@ import React from "react";
 import { Snackbar, TextInput, Text } from "react-native-paper";
 import { CustomButton } from "../Components/CustomButton";
 import { StyleSheet } from 'react-native';
-import axiosInstance from "../api/instance";
+import api from "../api";
 
 export class FormComponent extends React.Component {
     constructor(props) {
@@ -43,7 +43,7 @@ export class FormComponent extends React.Component {
         const userName = this.state.userName;
 
         try {
-            const response = await axiosInstance.post("/users/register", { email, password, userName });
+            const response = await api.doSignUp({ email, password, userName });
             this.props.navigation.navigate("Menu");
         } catch (error) {
             this.setState({ isSnackBarVisible: true, snackBarText: error.response.data });
@@ -55,13 +55,30 @@ export class FormComponent extends React.Component {
         // const password = this.state.password;
         const email = "miruna@email.com";
         const password = "1234";
-
         try {
+            const response = await (await api.doSignIn({ email, password })).json();
+            this.props.navigation.navigate("Menu", {userId: response.id});
+        } catch (error) {
+            let errorMsg;
+            if(error.response){
+                errorMsg=error.response.data;
+            }else{
+                errorMsg=error.message;
+            }
+            this.setState({ isSnackBarVisible: true, snackBarText:errorMsg });
+        }
+        /*try {
             const response = await axiosInstance.post("/users/login", { email, password });
             this.props.navigation.navigate("Menu", {userId: response.data.id});
         } catch (error) {
-            this.setState({ isSnackBarVisible: true, snackBarText: error.response.data });
-        }
+            let errorMsg;
+            if(error.response){
+                errorMsg=error.response.data;
+            }else{
+                errorMsg=error.message;
+            }
+            this.setState({ isSnackBarVisible: true, snackBarText:errorMsg });
+        }*/
     }
 
     onSignUpTextPressed() {

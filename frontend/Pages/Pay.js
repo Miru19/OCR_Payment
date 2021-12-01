@@ -1,19 +1,28 @@
 import React from "react";
 import { StyleSheet, View, Text, ImageEditor } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
+import { Picker } from '@react-native-picker/picker';
 import { TextInput } from "react-native-paper";
 import { CustomButton } from "../Components/CustomButton";
 import * as FileSystem from 'expo-file-system';
 import * as ImagePicker from 'expo-image-picker';
 import api from "../api";
 import { manipulateAsync, FlipType, SaveFormat } from 'expo-image-manipulator';
+import {
+    DropdownList,
+} from 'react-native-ultimate-modal-picker';
 export class Pay extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             citiesOpen: false,
             areasOpen: false,
-            plateNumber: ""
+            plateNumber: "",
+            parkingTime: "0",
+            chosenCity: "",
+            chosenZone: "",
+            zonePrice: 0,
+            totalPrice: 0,
         }
 
         this.setCitiesOpen = this.setCitiesOpen.bind(this);
@@ -23,8 +32,8 @@ export class Pay extends React.Component {
 
     citiesList = [
         { label: 'Brasov', value: 'Brasov' },
-        { label: 'Cluj Napoca', value: 'Cluj Napoca' },
-        { label: 'Bucuresti', value: 'Bucuresti' },
+        /*{ label: 'Cluj Napoca', value: 'Cluj Napoca' },
+        { label: 'Bucuresti', value: 'Bucuresti' },*/
     ]
 
 
@@ -67,21 +76,53 @@ export class Pay extends React.Component {
             })
         })
     }
+    areaChanged = (value) => {
+        this.setState({ chosenZone: value })
+        api.getZonePrice(value).then(async response => {
+            const parsedResp = await response.json();
+            if (parsedResp.price) {
+                console.log(parsedResp);
+                this.setState({ zonePrice: parsedResp.price });
+                const parkingTimeInt = this.state.parkingTime.toString();
+                if (parkingTimeInt > 0) {
+                    this.setState({ totalPrice: this.state.zonePrice * parkingTimeInt })
+                }
+            }
+        })
+    }
 
+    parkingTimeChanged = (value) => {
+        this.setState({ parkingTime: value })
+
+        if (this.state.zonePrice != 0) {
+            this.setState({ totalPrice: this.state.zonePrice * value });
+        }
+        console.log(this.state.totalPrice);
+    }
     render() {
         return (
             <View style={styles.container}>
-                <DropDownPicker
-                    open={this.state.citiesOpen}
+                <DropdownList
+                    title="City"
                     items={this.citiesList}
-                    setOpen={this.setCitiesOpen}
+                    onChange={(value) => this.setState({ chosenCity: value })}
 
                 />
-                <DropDownPicker
-                    open={this.state.areasOpen}
+                <DropdownList
+                    title="Area"
                     items={this.areasList}
-                    setOpen={this.setAreasOpen}
+                    onChange={(value) => this.areaChanged(value)}
+
                 />
+                <DropdownList
+                    title="Parking time"
+                    items={[...Array(10)].map((e, i) => {
+                        return { label: (i + 1).toString() + ' hours', value: (i + 1).toString() }
+                    }
+                    )}
+                    onChange={(value) => this.parkingTimeChanged(value)}
+                />
+
                 <CustomButton buttonText="Scan Plate" color="#29356d" fontColor="#ffffff" onPress={this.selectImage} />
                 <Text> or </Text>
                 <TextInput
@@ -89,7 +130,7 @@ export class Pay extends React.Component {
                     label="Plate Number"
                     value={this.state.plateNumber}
                     style={styles.input} />
-
+                {this.state.totalPrice > 0 && <Text style={{ fontSize: "20", fontWeight: "bold" }}>{this.state.totalPrice} lei</Text>}
                 <CustomButton buttonText="Pay" color="#29356d" fontColor="#ffffff" />
 
             </View>

@@ -1,6 +1,6 @@
 import React from "react";
 import { List } from "react-native-paper";
-import axiosInstance from "../api/instance";
+
 import { StyleSheet, Image, View, Text } from 'react-native';
 import UserContext from "../Context/UserContext";
 
@@ -16,7 +16,7 @@ export class History extends React.Component {
 
     async componentDidMount() {
         this._isMounted = true;
-        try {
+        /*try {
             const response = await axiosInstance.get("/payments/getPayments", {
                 params: {
                     userId: this.context.userId
@@ -43,6 +43,7 @@ export class History extends React.Component {
         } catch (error) {
             console.log(error);
         }
+        */
     }
 
     render() {

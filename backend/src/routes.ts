@@ -31,4 +31,10 @@ export const Routes = [{
     route: "/payments/getPayments",
     controller: PaymentsController,
     action: "getPayments"
+},
+{
+    method: "get",
+    route: "/payments/getzoneprice",
+    controller: PaymentsController,
+    action: "getZonePrice"
 }];

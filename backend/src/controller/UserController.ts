@@ -18,16 +18,16 @@ export class UserController {
                 response.status(401).send("All input are required");
                 return;
             }
-
+            console.log(email,password);
             const userExists = await this.userRepository.findOne({ where: { email: email } });
 
             if (userExists && userExists.password == password) {
-
-                response.status(201).send({id: userExists.id});
+                console.log(userExists)
+                response.status(201).json({id: userExists.id});
                 return;
             }
-
-            response.status(401).send("Invalid Credentials");
+            console.log("not found")
+            response.status(401).json({message:"Invalid Credentials"});
 
         } catch (error) {
             console.log(error);
