@@ -38,10 +38,21 @@ const getZonePrice = (zone) => {
         },
     })
 };
+const payParking = (body) => {
+    console.log(body);
+    return fetch(API_URL + '/payments/addPayment', {
+        method: 'POST',
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body:JSON.stringify(body)
+    })
+};
 
 export default {
     getPlateNumber,
     doSignIn,
     doSignUp,
     getZonePrice,
+    payParking
 }

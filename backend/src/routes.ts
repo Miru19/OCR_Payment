@@ -34,7 +34,7 @@ export const Routes = [{
 },
 {
     method: "get",
-    route: "/payments/getzoneprice",
+    route: "/payments/getZonePrice",
     controller: PaymentsController,
     action: "getZonePrice"
 }];

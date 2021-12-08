@@ -2,7 +2,7 @@ import React from "react";
 import { StyleSheet, View, Text, ImageEditor } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { Picker } from '@react-native-picker/picker';
-import { TextInput } from "react-native-paper";
+import { TextInput, Snackbar } from "react-native-paper";
 import { CustomButton } from "../Components/CustomButton";
 import * as FileSystem from 'expo-file-system';
 import * as ImagePicker from 'expo-image-picker';
@@ -23,11 +23,15 @@ export class Pay extends React.Component {
             chosenZone: "",
             zonePrice: 0,
             totalPrice: 0,
+            userId: 1,
+            isSnackBarVisible: false,
+            snackBarText: ""
         }
 
         this.setCitiesOpen = this.setCitiesOpen.bind(this);
         this.setAreasOpen = this.setAreasOpen.bind(this);
         this.selectImage = this.selectImage.bind(this);
+        this.onDismissSnackBar = this.onDismissSnackBar.bind(this);
     }
 
     citiesList = [
@@ -42,6 +46,10 @@ export class Pay extends React.Component {
         { label: 'Area 1', value: '1' },
         { label: 'Area 2', value: '2' },
     ]
+    onDismissSnackBar() {
+        this.setState({ isSnackBarVisible: false });
+    }
+
 
     setCitiesOpen() {
         this.setState({ citiesOpen: !this.state.citiesOpen });
@@ -99,6 +107,25 @@ export class Pay extends React.Component {
         }
         console.log(this.state.totalPrice);
     }
+    triggerPayment = () => {
+        if (this.state.chosenCity != "" && this.state.chosenZone != "" && this.state.parkingTime != "0" && this.state.plateNumber != "") {
+            const body = {
+                city: this.state.chosenCity,
+                area: this.state.chosenZone,
+                duration: this.state.parkingTime,
+                plateNumber: this.state.plateNumber,
+                userId: this.state.userId,
+            }
+            api.payParking(body).then(async response => {
+                response = await response.json();
+                console.log(response);
+            }).catch(err => {
+                console.log(error);
+            })
+        } else {
+            this.setState({ isSnackBarVisible: true, snackBarText: "Form input problem" });
+        }
+    }
     render() {
         return (
             <View style={styles.container}>
@@ -129,9 +156,17 @@ export class Pay extends React.Component {
                     mode="outlined"
                     label="Plate Number"
                     value={this.state.plateNumber}
-                    style={styles.input} />
+                    style={styles.input}
+                    onChangeText={(value) => this.setState({ plateNumber: value })} />
                 {this.state.totalPrice > 0 && <Text style={{ fontSize: "20", fontWeight: "bold" }}>{this.state.totalPrice} lei</Text>}
-                <CustomButton buttonText="Pay" color="#29356d" fontColor="#ffffff" />
+                <CustomButton buttonText="Pay" onPress={() => this.triggerPayment()} color="#29356d" fontColor="#ffffff" />
+                <Snackbar
+                    visible={this.state.isSnackBarVisible}
+                    onDismiss={this.onDismissSnackBar}
+                    duration="3000"
+                    style={styles.snackBar}>
+                    {this.state.snackBarText}
+                </Snackbar>
 
             </View>
         );
@@ -150,5 +185,13 @@ const styles = StyleSheet.create({
         width: '80%',
         margin: 15,
         borderRadius: 15,
+    },
+    snackBar: {
+        flex: 1,
+        alignSelf: 'center',
+        backgroundColor: "#29356d",
+        borderRadius: 15,
+        marginBottom: '130%',
+        width: '80%',
     },
 });
