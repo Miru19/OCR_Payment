@@ -2,7 +2,7 @@ import React from "react";
 import { StyleSheet, View, Text, ImageEditor } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { Picker } from '@react-native-picker/picker';
-import { TextInput, Snackbar } from "react-native-paper";
+import { TextInput, Snackbar, Dialog, Paragraph, Button } from "react-native-paper";
 import { CustomButton } from "../Components/CustomButton";
 import * as FileSystem from 'expo-file-system';
 import * as ImagePicker from 'expo-image-picker';
@@ -25,7 +25,8 @@ export class Pay extends React.Component {
             totalPrice: 0,
             userId: 1,
             isSnackBarVisible: false,
-            snackBarText: ""
+            snackBarText: "",
+            paymentDialogVisible: false,
         }
 
         this.setCitiesOpen = this.setCitiesOpen.bind(this);
@@ -57,6 +58,10 @@ export class Pay extends React.Component {
 
     setAreasOpen() {
         this.setState({ areasOpen: !this.state.areasOpen });
+    }
+    paymentConfirmed() {
+        this.setState({ paymentDialogVisible: false });
+        this.props.navigation.navigate('History');
     }
 
     selectImage() {
@@ -118,7 +123,7 @@ export class Pay extends React.Component {
             }
             api.payParking(body).then(async response => {
                 response = await response.json();
-                console.log(response);
+                this.setState({ paymentDialogVisible: true });
             }).catch(err => {
                 console.log(error);
             })
@@ -167,7 +172,17 @@ export class Pay extends React.Component {
                     style={styles.snackBar}>
                     {this.state.snackBarText}
                 </Snackbar>
-
+                <Dialog
+                    visible={this.state.paymentDialogVisible}
+                    >
+                    <Dialog.Title>Payment</Dialog.Title>
+                    <Dialog.Content>
+                        <Paragraph>Payment done!</Paragraph>
+                    </Dialog.Content>
+                    <Dialog.Actions>
+                        <Button onPress={() => this.paymentConfirmed()}>Finish</Button>
+                    </Dialog.Actions>
+                </Dialog>
             </View>
         );
     }
@@ -179,7 +194,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         alignSelf: 'center',
-        width: '80%'
+        width: '100%'
     },
     input: {
         width: '80%',
