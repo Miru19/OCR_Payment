@@ -10,7 +10,6 @@ const getPlateNumber = (platePicB64) => {
     })
 };
 const doSignUp = (body) => {
-    console.log(body);
     return fetch(API_URL + '/users/register', {
         method: 'POST',
         headers: {
@@ -38,7 +37,6 @@ const getZonePrice = (zone) => {
     })
 };
 const payParking = (body) => {
-    console.log(body);
     return fetch(API_URL + '/payments/addPayment', {
         method: 'POST',
         headers: {

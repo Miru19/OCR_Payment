@@ -18,11 +18,10 @@ export class UserController {
                 response.status(401).json({message:"All input are required"});
                 return;
             }
-            console.log(email,password);
+
             const userExists = await this.userRepository.findOne({ where: { email: email } });
 
             if (userExists && userExists.password == password) {
-                console.log(userExists)
                 response.status(201).json({id: userExists.id});
                 return;
             }

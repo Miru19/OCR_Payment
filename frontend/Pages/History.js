@@ -1,7 +1,7 @@
 import React from "react";
 import { List } from "react-native-paper";
 
-import { StyleSheet, Image, View, Text } from 'react-native';
+import { StyleSheet, Image, View, Text, ScrollView } from 'react-native';
 import UserContext from "../Context/UserContext";
 import api from "../api";
 
@@ -47,6 +47,11 @@ export class History extends React.Component {
         
     }
 
+    async componentDidUpdate(){
+        await this.componentDidMount();
+        
+    }
+
     render() {
         return (
             <>
@@ -62,9 +67,9 @@ export class History extends React.Component {
                     </View>
                 }
                 {this._isMounted === true && this.state.payments.length != 0 &&
-                    <>
+                    <ScrollView style={{overflow: "hidden"}}>
                         {this.state.payments}
-                    </>
+                    </ScrollView>
 
                 }
 

@@ -2,8 +2,6 @@ import { getRepository } from "typeorm";
 import { NextFunction, Request, Response } from "express";
 import { Payment } from "../entity/Payment";
 import { User } from "../entity/User";
-import { print } from "util";
-import { stringify } from "querystring";
 
 export class PaymentsController {
 
@@ -14,7 +12,7 @@ export class PaymentsController {
 
         const user = await this.userRepository.findOne({ where: { id: request.body.userId } });
         const payment = new Payment();
-        const date = new Date();
+        const currentDate = new Date();
         try{
             payment.city = request.body.city;
             payment.area = request.body.area;
@@ -22,14 +20,13 @@ export class PaymentsController {
             payment.price=(this.localGetZonePrice(payment.area)* parseInt(payment.duration)).toString();
             payment.plateNumber = request.body.plateNumber;
 
-            //payment.price = request.body.price;
-            payment.date = date.toUTCString();
+            payment.date = currentDate.getDate().toString() + "/" + currentDate.getMonth().toString() + "/" + currentDate.getFullYear().toString() 
+            + " " + currentDate.getHours().toString() + ":" +currentDate.getMinutes().toString() + ":" + currentDate.getSeconds().toString();
             payment.user = user;
             
             await this.paymentRepository.save(payment);
             return response.status(201).json({message:"Payment succesful"});
         }catch(errMsg){
-            console.log(payment);
             console.log(errMsg);
             return response.status(500).json({ message: errMsg });
         }

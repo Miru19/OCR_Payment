@@ -1,17 +1,15 @@
 import React from "react";
-import { StyleSheet, View, Text, ImageEditor } from 'react-native';
-import DropDownPicker from 'react-native-dropdown-picker';
-import { Picker } from '@react-native-picker/picker';
+import { StyleSheet, View, Text } from 'react-native';
 import { TextInput, Snackbar, Dialog, Paragraph, Button } from "react-native-paper";
 import { CustomButton } from "../Components/CustomButton";
-import * as FileSystem from 'expo-file-system';
 import * as ImagePicker from 'expo-image-picker';
 import UserContext from "../Context/UserContext";
 import api from "../api";
-import { manipulateAsync, FlipType, SaveFormat } from 'expo-image-manipulator';
+import { manipulateAsync } from 'expo-image-manipulator';
 import {
     DropdownList,
 } from 'react-native-ultimate-modal-picker';
+
 export class Pay extends React.Component {
     constructor(props) {
         super(props);
@@ -27,6 +25,8 @@ export class Pay extends React.Component {
             isSnackBarVisible: false,
             snackBarText: "",
             paymentDialogVisible: false,
+            paymentAvailability: "",
+            loadingVisible: false
         }
 
         this.setCitiesOpen = this.setCitiesOpen.bind(this);
@@ -72,10 +72,12 @@ export class Pay extends React.Component {
             }
             ImagePicker.launchImageLibraryAsync({ allowsEditing: false }).then(pickerResult => {
                 if (!pickerResult.cancelled) {
+                    this.setState({loadingVisible: true});
                     manipulateAsync(pickerResult.uri, [{ resize: { width: 1000 } }], { base64: true }).then(resizedPhoto => {
                         api.getPlateNumber(resizedPhoto.base64).then(response => {
                             response.json().then(plateDetails => {
                                 if (plateDetails.results.length > 0) {
+                                    this.setState({loadingVisible: false});
                                     this.setState({ plateNumber: plateDetails.results[0].plate.toUpperCase() });
                                 }
                             })
@@ -94,14 +96,15 @@ export class Pay extends React.Component {
         api.getZonePrice(value).then(async response => {
             const parsedResp = await response.json();
             if (parsedResp.price) {
-                console.log(parsedResp);
                 this.setState({ zonePrice: parsedResp.price });
                 const parkingTimeInt = this.state.parkingTime.toString();
                 if (parkingTimeInt > 0) {
                     this.setState({ totalPrice: this.state.zonePrice * parkingTimeInt })
                 }
             }
-        })
+        }).catch(error =>{
+            console.log(error);
+        });
     }
 
     parkingTimeChanged = (value) => {
@@ -110,7 +113,6 @@ export class Pay extends React.Component {
         if (this.state.zonePrice != 0) {
             this.setState({ totalPrice: this.state.zonePrice * value });
         }
-        console.log(this.state.totalPrice);
     }
     triggerPayment = () => {
         if (this.state.chosenCity != "" && this.state.chosenZone != "" && this.state.parkingTime != "0" && this.state.plateNumber != "") {
@@ -123,12 +125,14 @@ export class Pay extends React.Component {
             }
             api.payParking(body).then(async response => {
                 response = await response.json();
-                this.setState({ paymentDialogVisible: true });
+                const currentDate = new Date();
+                const endTime = (currentDate.getHours()+parseInt(this.state.parkingTime))+":" + currentDate.getMinutes();
+                this.setState({ paymentDialogVisible: true, paymentAvailability: endTime});
             }).catch(err => {
                 console.log(error);
             })
         } else {
-            this.setState({ isSnackBarVisible: true, snackBarText: "Form input problem" });
+            this.setState({ isSnackBarVisible: true, snackBarText: "All inputs are required" });
         }
     }
     render() {
@@ -158,12 +162,18 @@ export class Pay extends React.Component {
                 <CustomButton buttonText="Scan Plate" color="#29356d" fontColor="#ffffff" onPress={this.selectImage} />
                 <Text> or </Text>
                 <TextInput
-                    mode="outlined"
+                    mode="flat"
+                    backgroundColor="inherit"
                     label="Plate Number"
                     value={this.state.plateNumber}
                     style={styles.input}
+                    activeUnderlineColor="#29356d"
                     onChangeText={(value) => this.setState({ plateNumber: value })} />
-                {this.state.totalPrice > 0 && <Text style={{ fontSize: 20, fontWeight: "bold" }}>{this.state.totalPrice} lei</Text>}
+
+                {this.state.totalPrice > 0 && 
+                <Text style={{ fontSize: 20, fontWeight: "bold", color:"#29356d", margin: 5 }}>PRICE: {this.state.totalPrice} RON</Text>
+                }
+
                 <CustomButton buttonText="Pay" onPress={() => this.triggerPayment()} color="#29356d" fontColor="#ffffff" />
                 <Snackbar
                     visible={this.state.isSnackBarVisible}
@@ -177,11 +187,24 @@ export class Pay extends React.Component {
                     >
                     <Dialog.Title>Payment</Dialog.Title>
                     <Dialog.Content>
-                        <Paragraph>Payment done!</Paragraph>
+                        <Paragraph>
+                            Payment done!
+                            {"\n"}
+                            Available until: {this.state.paymentAvailability}
+                            </Paragraph>
                     </Dialog.Content>
                     <Dialog.Actions>
-                        <Button onPress={() => this.paymentConfirmed()}>Finish</Button>
+                        <Button onPress={() => this.paymentConfirmed()}>DONE!</Button>
                     </Dialog.Actions>
+                </Dialog>
+
+                <Dialog
+                    visible={this.state.loadingVisible}
+                    >
+                    <Dialog.Title>Scaning Plate</Dialog.Title>
+                    <Dialog.Content>
+                        <Paragraph>Please wait...</Paragraph>
+                    </Dialog.Content>
                 </Dialog>
             </View>
         );
@@ -199,7 +222,6 @@ const styles = StyleSheet.create({
     input: {
         width: '80%',
         margin: 15,
-        borderRadius: 15,
     },
     snackBar: {
         flex: 1,

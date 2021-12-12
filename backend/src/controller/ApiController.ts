@@ -11,7 +11,6 @@ export class ApiController {
             },
             body:JSON.stringify(request.body)
         },function(err,res,body){
-            console.log(body);
             response.status(201).send(body);
         })
         

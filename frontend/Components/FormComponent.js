@@ -44,10 +44,8 @@ export class FormComponent extends React.Component {
         api.doSignUp({email,password,userName}).then(async response=>{
             const responseBody = await response.json();
             if(response.status==201){
-                console.log(response.status);
                 this.props.navigation.navigate("Menu", {userId: responseBody.id});
             }else{
-                console.log(response.status);
                 this.setState({ isSnackBarVisible: true, snackBarText:responseBody.message });
             }
         }).catch(error=>{
@@ -61,10 +59,8 @@ export class FormComponent extends React.Component {
         api.doSignIn({email,password}).then(async response=>{
             const responseBody = await response.json();
             if(response.status==201){
-                console.log(response.status);
                 this.props.navigation.navigate("Menu", {userId: responseBody.id});
             }else{
-                console.log(response.status);
                 this.setState({ isSnackBarVisible: true, snackBarText:responseBody.message });
             }
         }).catch(error=>{
