@@ -228,7 +228,7 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         backgroundColor: "#29356d",
         borderRadius: 15,
-        marginBottom: '130%',
+        marginBottom: '150%',
         width: '80%',
     },
 });
