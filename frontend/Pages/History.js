@@ -3,6 +3,7 @@ import { List } from "react-native-paper";
 
 import { StyleSheet, Image, View, Text } from 'react-native';
 import UserContext from "../Context/UserContext";
+import api from "../api";
 
 const image = require('../assets/emptyState.png')
 export class History extends React.Component {
@@ -16,20 +17,19 @@ export class History extends React.Component {
 
     async componentDidMount() {
         this._isMounted = true;
-        /*try {
-            const response = await axiosInstance.get("/payments/getPayments", {
-                params: {
-                    userId: this.context.userId
-                }
-            });
+        try {
+            const response = await api.getHistory(this.context.userId);
             const payments = [];
-            for (let index = 0; index < response.data.length; index++) {
-                const title = response.data[index].plateNumber.toUpperCase();
-                const description = response.data[index].city + 
-                " - Area: " + response.data[index].area + 
-                "\nDuration: " + response.data[index].duration + 
-                " - Price: " + response.data[index].price + 
-                "\nDate: "+ response.data[index].date;
+
+            for (let index = 0; index < response.length; index++) {
+        
+                const title = response[index].plateNumber.toUpperCase();
+                const description = response[index].city + 
+                " - Area: " + response[index].area + 
+                "\nDuration: " + response[index].duration +" hours"+ 
+                " - Price: " + response[index].price + " RON"+ 
+                "\nDate: "+ response[index].date;
+
                 payments.push(
                     <List.Item
                         title={title}
@@ -39,11 +39,12 @@ export class History extends React.Component {
                         left={props => <List.Icon {...props} icon="car" />}
                     />)
             }
+            
             this.setState({ payments: payments });
         } catch (error) {
             console.log(error);
         }
-        */
+        
     }
 
     render() {
