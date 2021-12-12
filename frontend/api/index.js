@@ -48,11 +48,23 @@ const payParking = (body) => {
         body:JSON.stringify(body)
     })
 };
+const getHistory = async (userId) => {
+    const result = await fetch(API_URL + '/payments/getPayments?userId='+userId, {
+        method: 'GET',
+        headers: {
+            "Content-Type": "application/json",
+        },
+    });
+
+    const json = await result.json();
+    return json;
+}
 
 export default {
     getPlateNumber,
     doSignIn,
     doSignUp,
     getZonePrice,
-    payParking
+    payParking,
+    getHistory
 }
