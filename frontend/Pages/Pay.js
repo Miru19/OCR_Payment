@@ -6,6 +6,7 @@ import { TextInput, Snackbar, Dialog, Paragraph, Button } from "react-native-pap
 import { CustomButton } from "../Components/CustomButton";
 import * as FileSystem from 'expo-file-system';
 import * as ImagePicker from 'expo-image-picker';
+import UserContext from "../Context/UserContext";
 import api from "../api";
 import { manipulateAsync, FlipType, SaveFormat } from 'expo-image-manipulator';
 import {
@@ -23,7 +24,6 @@ export class Pay extends React.Component {
             chosenZone: "",
             zonePrice: 0,
             totalPrice: 0,
-            userId: 1,
             isSnackBarVisible: false,
             snackBarText: "",
             paymentDialogVisible: false,
@@ -37,8 +37,8 @@ export class Pay extends React.Component {
 
     citiesList = [
         { label: 'Brasov', value: 'Brasov' },
-        /*{ label: 'Cluj Napoca', value: 'Cluj Napoca' },
-        { label: 'Bucuresti', value: 'Bucuresti' },*/
+        { label: 'Cluj Napoca', value: 'Cluj-Napoca' },
+        { label: 'Bucuresti', value: 'Bucuresti' },
     ]
 
 
@@ -119,7 +119,7 @@ export class Pay extends React.Component {
                 area: this.state.chosenZone,
                 duration: this.state.parkingTime,
                 plateNumber: this.state.plateNumber,
-                userId: this.state.userId,
+                userId: this.context.userId,
             }
             api.payParking(body).then(async response => {
                 response = await response.json();
@@ -163,7 +163,7 @@ export class Pay extends React.Component {
                     value={this.state.plateNumber}
                     style={styles.input}
                     onChangeText={(value) => this.setState({ plateNumber: value })} />
-                {this.state.totalPrice > 0 && <Text style={{ fontSize: "20", fontWeight: "bold" }}>{this.state.totalPrice} lei</Text>}
+                {this.state.totalPrice > 0 && <Text style={{ fontSize: 20, fontWeight: "bold" }}>{this.state.totalPrice} lei</Text>}
                 <CustomButton buttonText="Pay" onPress={() => this.triggerPayment()} color="#29356d" fontColor="#ffffff" />
                 <Snackbar
                     visible={this.state.isSnackBarVisible}
@@ -187,7 +187,7 @@ export class Pay extends React.Component {
         );
     }
 }
-
+Pay.contextType = UserContext;
 const styles = StyleSheet.create({
     container: {
         flex: 1,

@@ -21,7 +21,6 @@ const doSignUp = (body) => {
 };
 
 const doSignIn = (body) => {
-    console.log(body);
     return fetch(API_URL + '/users/login', {
         method: 'POST',
         headers: {

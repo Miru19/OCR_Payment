@@ -15,7 +15,7 @@ export class UserController {
             const { email, password } = request.body;
             
             if (!(email && password)) {
-                response.status(401).send("All input are required");
+                response.status(401).json({message:"All input are required"});
                 return;
             }
             console.log(email,password);
@@ -27,7 +27,7 @@ export class UserController {
                 return;
             }
             console.log("not found")
-            response.status(401).json({message:"Invalid Credentials"});
+            return response.status(401).json({message:"Invalid Credentials"});
 
         } catch (error) {
             console.log(error);
@@ -39,13 +39,13 @@ export class UserController {
             const { userName, email, password } = request.body;
 
             if (!(userName && email && password)) {
-                response.status(401).send("All inputs are required");
+                response.status(401).json({message:"All input are required"});
                 return;
             }
 
             const userExists = await this.userRepository.findOne({ where: { email: email } });
             if (userExists) {
-                response.status(409).send("User Already Exist. Please Sign In");
+                response.status(409).json({message:"User Already Exist. Please Sign In"});
                 return;
             }
 
@@ -56,7 +56,7 @@ export class UserController {
             };
 
             const newUser = await this.userRepository.save(user);
-            response.status(201).send({id: newUser.id});
+            response.status(201).json({id: newUser.id});
 
         } catch (error) {
             console.log(error);

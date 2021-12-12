@@ -41,44 +41,35 @@ export class FormComponent extends React.Component {
         const email = this.state.email;
         const password = this.state.password;
         const userName = this.state.userName;
-
-        try {
-            const response = await api.doSignUp({ email, password, userName });
-            this.props.navigation.navigate("Menu");
-        } catch (error) {
-            this.setState({ isSnackBarVisible: true, snackBarText: error.response.data });
-        }
+        api.doSignUp({email,password,userName}).then(async response=>{
+            const responseBody = await response.json();
+            if(response.status==201){
+                console.log(response.status);
+                this.props.navigation.navigate("Menu", {userId: responseBody.id});
+            }else{
+                console.log(response.status);
+                this.setState({ isSnackBarVisible: true, snackBarText:responseBody.message });
+            }
+        }).catch(error=>{
+            this.setState({ isSnackBarVisible: true, snackBarText:"Server connection failed" });
+        })
     }
 
     async signInPressed() {
-        // const email = this.state.email;
-        // const password = this.state.password;
-        const email = "miruna@email.com";
-        const password = "1234";
-        try {
-            const response = await (await api.doSignIn({ email, password })).json();
-            this.props.navigation.navigate("Menu", {userId: response.id});
-        } catch (error) {
-            let errorMsg;
-            if(error.response){
-                errorMsg=error.response.data;
+        const email = this.state.email;
+        const password = this.state.password;
+        api.doSignIn({email,password}).then(async response=>{
+            const responseBody = await response.json();
+            if(response.status==201){
+                console.log(response.status);
+                this.props.navigation.navigate("Menu", {userId: responseBody.id});
             }else{
-                errorMsg=error.message;
+                console.log(response.status);
+                this.setState({ isSnackBarVisible: true, snackBarText:responseBody.message });
             }
-            this.setState({ isSnackBarVisible: true, snackBarText:errorMsg });
-        }
-        /*try {
-            const response = await axiosInstance.post("/users/login", { email, password });
-            this.props.navigation.navigate("Menu", {userId: response.data.id});
-        } catch (error) {
-            let errorMsg;
-            if(error.response){
-                errorMsg=error.response.data;
-            }else{
-                errorMsg=error.message;
-            }
-            this.setState({ isSnackBarVisible: true, snackBarText:errorMsg });
-        }*/
+        }).catch(error=>{
+            this.setState({ isSnackBarVisible: true, snackBarText:"Server connection failed" });
+        })
     }
 
     onSignUpTextPressed() {

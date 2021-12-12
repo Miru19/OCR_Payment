@@ -4,7 +4,7 @@ import { Payment } from "./Payment";
 @Entity()
 export class User {
 
-    @PrimaryGeneratedColumn()
+    @PrimaryGeneratedColumn('increment')
     id: number;
 
     @Column()
