@@ -50,7 +50,7 @@ export class UserController {
 
             const user = {
                 userName: userName,
-                email: email.toLowerCase(),
+                email: email,
                 password: password,
             };
 

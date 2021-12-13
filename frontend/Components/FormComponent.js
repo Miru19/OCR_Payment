@@ -79,7 +79,7 @@ export class FormComponent extends React.Component {
     render() {
         const buttonText = this.state.signUp ? "Sign Up" : "Sign In";
         const buttonEvent = this.state.signUp ? this.signUpPressed : this.signInPressed;
-        const textContent = this.state.signUp ? "Already have an acoount? Sign In" : "Forgot your passowrd?";
+        const textContent = this.state.signUp ? "Already have an acoount? Sign In" : "Create an Account";
         const textEvent = this.state.signUp ? this.onSignUpTextPressed : this.onSignUpTextPressed;
 
         return (

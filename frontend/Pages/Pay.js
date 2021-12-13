@@ -82,6 +82,8 @@ export class Pay extends React.Component {
                                 }
                             })
                         }).catch(error => {
+                            this.setState({loadingVisible: false});
+                            this.setState({isSnackBarVisible: true, snackBarText: "Invalid photo"});
                             console.log(error);
                         })
                     })
